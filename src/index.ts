@@ -5,7 +5,7 @@ import clear from "clear";
 import figlet from "figlet";
 import { program } from "commander";
 
-import { getAuthedWebsocket } from "./client";
+import { getAuthedSubscribedClient } from "./client";
 
 clear();
 console.log(
@@ -31,7 +31,7 @@ const { token, endpoint } = program.opts();
 if (!endpoint) program.help();
 
 try {
-  const ws = getAuthedWebsocket(endpoint, token, console.log);
+  const ws = getAuthedSubscribedClient(endpoint, token, console.log);
 } catch (e) {
   console.log(e);
 }
