@@ -35,6 +35,7 @@
     "figlet": "^1.5.0",
     "graphql": "^15.5.0",
     "graphql-ws": "^4.4.2",
+    "kikstart-graphql-client": "^1.5.0",
     "path": "^0.12.7",
     "ws": "^7.4.5"
   },
