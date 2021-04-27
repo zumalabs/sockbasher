@@ -32,13 +32,12 @@ program
     url: "the sock to bash",
   })
   .option(
-    "-e, --endpoint <endpoint>",
-    "Endpoint",
-    "ws://localhost:3000/graphql"
+    "-h, --host <host>",
+    "Host",
+    "localhost:3000"
   )
   .option("-n <number>", "Number of websocket connections", parseInt, 10)
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
-  .option("-t, --token <token>", "Auth token", "bla")
   .action(authHandler)
   .parse(process.argv);
