@@ -5,19 +5,29 @@ import clear from "clear";
 import figlet from "figlet";
 import { program } from "commander";
 
+import { getAuthedWebsocket } from "./client";
+
 clear();
 console.log(
   chalk.red(figlet.textSync("sockbasher", { horizontalLayout: "full" }))
 );
 
 program
-  .arguments("<url>")
   .description("bash the sock", {
     url: "the sock to bash",
   })
-  .option("-u, --user", "User")
-  .option("-p, --password", "Password")
+  .option("-e, --endpoint", "Endpoint", "ws://localhost:3000/graphql")
+  .option("-n", "Number of websocket connections", parseInt, 10)
+  .option("-u, --user", "User", "bill")
+  .option("-p, --password", "Password", "bill")
+  .option("-t, --token", "Auth token")
   .parse(process.argv);
 
-const { host, user, password } = program.opts();
-if (!host) program.help();
+const { token, endpoint } = program.opts();
+if (!endpoint) program.help();
+
+try {
+  const ws = getAuthedWebsocket(endpoint, token, console.log);
+} catch (e) {
+  console.log(e);
+}
