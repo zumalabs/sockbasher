@@ -8,6 +8,7 @@ export const getAuthedWebsocket = (
   const ws = new WebSocket(url, ["graphql-ws"]);
 
   ws.on("open", function open() {
+    ws.addListener("message", messageCallback);
     ws.send(
       JSON.stringify({
         type: "connection_init",
@@ -17,8 +18,6 @@ export const getAuthedWebsocket = (
       })
     );
   });
-
-  ws.addListener("message", messageCallback);
 
   return ws;
 };

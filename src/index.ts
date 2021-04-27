@@ -16,11 +16,15 @@ program
   .description("bash the sock", {
     url: "the sock to bash",
   })
-  .option("-e, --endpoint", "Endpoint", "ws://localhost:3000/graphql")
-  .option("-n", "Number of websocket connections", parseInt, 10)
-  .option("-u, --user", "User", "bill")
-  .option("-p, --password", "Password", "bill")
-  .option("-t, --token", "Auth token")
+  .option(
+    "-e, --endpoint <endpoint>",
+    "Endpoint",
+    "ws://localhost:3000/graphql"
+  )
+  .option("-n <number>", "Number of websocket connections", parseInt, 10)
+  .option("-u, --user <user>", "User", "bill")
+  .option("-p, --password <password>", "Password", "bill")
+  .option("-t, --token <token>", "Auth token", "bla")
   .parse(process.argv);
 
 const { token, endpoint } = program.opts();
