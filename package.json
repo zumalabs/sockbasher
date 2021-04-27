@@ -1,0 +1,46 @@
+{
+  "name": "sockbasher",
+  "version": "0.0.1",
+  "description": "test websocket data delivery resiliance",
+  "main": "./lib/index.js",
+  "bin": {
+    "sockbasher": "./lib/index.js"
+  },
+  "scripts": {
+    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create": "npm run build && npm run test",
+    "build": "tsc -p .",
+    "local": "sudo npm i -g && sockbasher",
+    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zumalabs/sockbasher.git"
+  },
+  "keywords": [
+    "bash",
+    "sock"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zumalabs/sockbasher/issues"
+  },
+  "homepage": "https://github.com/zumalabs/sockbasher#readme",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "clear": "^0.1.0",
+    "commander": "^7.2.0",
+    "figlet": "^1.5.0",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/clear": "^0.1.1",
+    "@types/figlet": "^1.5.1",
+    "@types/node": "^15.0.0",
+    "nodemon": "^2.0.7",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
+}
