@@ -22,12 +22,13 @@ class ClientHerd {
   }
 
   addClients = async (n: number, url: string, authToken: string) => {
-    for (let i = 0; i < n; i++) {
-      const client = new Client(url, authToken, this.clientCallback);
-      await client.ready;
+    const newClients = Array.from(Array(n).keys()).map(async () => {
+      const client = await new Client(url, authToken, this.clientCallback)
+        .ready;
       this.clients.push(client);
       this.changeCallback();
-    }
+    });
+    await Promise.all(newClients);
     return this;
   };
 

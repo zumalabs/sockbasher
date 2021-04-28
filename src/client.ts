@@ -49,7 +49,7 @@ class Client {
   }
 
   get ready() {
-    return this.ws.then(() => true);
+    return this.ws.then(() => this);
   }
 }
 
