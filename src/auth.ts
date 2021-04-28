@@ -12,10 +12,14 @@ interface TAuthTokens {
     tokenAuth: { token: string; refreshToken: string }
 }
 
-export async function fetchAuthTokens(username: string, password: string, endpoint: string) {
+export async function fetchAuthTokens(username: string, password: string, endpoint: string, token?: string) {
+    if (token) {
+        return token
+    }
     const graphQLClient = new GraphQLClient(endpoint)
-    return await graphQLClient.request<TAuthTokens>(mutation, {
+    const { tokenAuth } = await graphQLClient.request<TAuthTokens>(mutation, {
         username: username,
         password: password
     })
+    return tokenAuth.token
 }

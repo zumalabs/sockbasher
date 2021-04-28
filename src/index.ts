@@ -14,14 +14,14 @@ console.log(
 );
 
 async function authHandler (env: any, options: any) {
-    const { user, password, token, host } = program.opts();
+    const { user, password, token, host, connections } = program.opts();
     if (!host) program.help();
     const auth_endpoint = `https://${host}/api/graphql`
     const ws_endpoint = `ws://${host}/graphql`
 
     try {
-        const auth = await fetchAuthTokens(user, password, auth_endpoint)
-        const herd = new ClientHerd(ws_endpoint, token || auth.tokenAuth.token, console.log, 3);
+        const authToken = await fetchAuthTokens(user, password, auth_endpoint, token)
+        const herd = new ClientHerd(ws_endpoint, authToken, console.log, connections);
     } catch (e) {
         console.log(e);
     }
@@ -32,13 +32,13 @@ program
     url: "the sock to bash",
   })
   .option(
-    "-h, --host <host>",
+    "-e, --host <host>",
     "Host",
     "localhost:3000"
   )
-  .option("-n <number>", "Number of websocket connections", parseInt, 10)
+  .option("-n, --connections <connections>", "Number of websocket connections", parseInt, 3)
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
-  .option("-t, --token <token>", "Auth token", "-")
+  .option("-t, --token <token>", "Auth token")
   .action(authHandler)
   .parse(process.argv);
