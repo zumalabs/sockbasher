@@ -44,6 +44,10 @@ class Client {
   toString() {
     return pretty(this.hashCounts);
   }
+
+  get ready() {
+    return this.ws.then(() => true);
+  }
 }
 
 const getAuthedWebsocket = (

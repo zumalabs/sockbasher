@@ -12,16 +12,23 @@ class ClientHerd {
     url: string,
     authToken: string,
     changeCallback?: (herd: ClientHerd) => void,
-    n: number = 5
+    n: number = 0
   ) {
     this.uniqueMessageStreams = {};
     this.changeCallback = () => {};
     if (changeCallback) this.changeCallback = () => changeCallback(this);
-    this.clients = Array.from(Array(n).keys()).map(
-      () => new Client(url, authToken, this.clientCallback)
-    );
-    // console.log(this.clients);
+    this.clients = [];
+    this.addClients(n, url, authToken);
   }
+
+  addClients = async (n: number, url: string, authToken: string) => {
+    for (let i = 0; i < n; i++) {
+      const client = new Client(url, authToken, this.clientCallback);
+      await client.ready;
+      this.clients.push(client);
+    }
+    return this;
+  };
 
   clientCallback = (client: Client) => {
     console.log(chalk.grey(client));
