@@ -59,7 +59,7 @@ const getAuthedWebsocket = (
   messageCallback = (m: string) => {},
   payloadsOnAck: any[] = []
 ) => {
-  // console.log(chalk.bgGreen("getAuthedWebsocket"));
+  debug(chalk.bgGreen("getAuthedWebsocket"));
 
   const promise = new Promise<WebSocket>((resolve, reject) => {
     const ws = new WebSocket(url, ["graphql-ws"]);
@@ -71,9 +71,7 @@ const getAuthedWebsocket = (
           //@ts-ignore
           const { type } = JSON.parse(json);
           if (type === "connection_ack") {
-            // console.log(
-            //   chalk.cyanBright("Connection Acknowledged, send payloads")
-            // );
+            debug(chalk.cyanBright("Connection Acknowledged, send payloads"));
             for (const payload of payloadsOnAck) {
               ws.send(JSON.stringify(payload));
             }
