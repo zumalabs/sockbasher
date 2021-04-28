@@ -21,11 +21,13 @@ class Client {
   }
 
   onMessage = (m: string) => {
-    console.log(chalk.yellow(m));
+    console.log(chalk.yellow(m), chalk.yellowBright(getHash(m)));
     try {
       const { type, ...data } = JSON.parse(m);
-      this.logMessage(m);
-      if (type === "data") this.changeCallback();
+      if (type === "data") {
+        this.logMessage(m);
+        this.changeCallback();
+      }
     } catch (e) {
       console.log(chalk.redBright(e));
     }
@@ -56,7 +58,7 @@ const getAuthedWebsocket = (
   messageCallback = (m: string) => {},
   payloadsOnAck: any[] = []
 ) => {
-  console.log(chalk.bgGreen("getAuthedWebsocket"));
+  // console.log(chalk.bgGreen("getAuthedWebsocket"));
 
   const promise = new Promise<WebSocket>((resolve, reject) => {
     const ws = new WebSocket(url, ["graphql-ws"]);
@@ -68,9 +70,9 @@ const getAuthedWebsocket = (
           //@ts-ignore
           const { type } = JSON.parse(json);
           if (type === "connection_ack") {
-            console.log(
-              chalk.cyanBright("Connection Acknowledged, send payloads")
-            );
+            // console.log(
+            //   chalk.cyanBright("Connection Acknowledged, send payloads")
+            // );
             for (const payload of payloadsOnAck) {
               ws.send(JSON.stringify(payload));
             }

@@ -31,11 +31,11 @@ class ClientHerd {
   };
 
   clientCallback = (client: Client) => {
-    console.log(chalk.grey(client));
-    this.uniqueMessageStreams = this.clients.reduce(
-      (acc, c) => ({ ...acc, [getHash(c.hashCounts)]: c.hashCounts }),
-      {}
-    );
+    // console.log(chalk.grey(client));
+    this.uniqueMessageStreams = this.clients.reduce((acc, c) => {
+      const hashCounts = c.hashCounts;
+      return { ...acc, [getHash(hashCounts)]: hashCounts };
+    }, {});
     this.changeCallback();
   };
 
