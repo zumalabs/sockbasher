@@ -1,7 +1,8 @@
 import WebSocket from "ws";
 import chalk from "chalk";
-import crypto from "crypto";
+import getHash from "./hash";
 import subscriptions from "./subscriptions";
+import pretty from "./pretty";
 
 class Client {
   private ws: WebSocket;
@@ -19,12 +20,14 @@ class Client {
   }
 
   onMessage = (m: string) => {
-    console.log(chalk.yellow(m));
+    // console.log(chalk.yellow(m));
     try {
       const { type, ...data } = JSON.parse(m);
       this.logMessage(m);
       if (type === "data" && this.changeCallback) this.changeCallback(this);
-    } catch {}
+    } catch (e) {
+      console.log(chalk.redBright(e));
+    }
   };
 
   get hashCounts() {
@@ -32,22 +35,23 @@ class Client {
   }
 
   logMessage = (m: string) => {
-    const hash = crypto.createHash("sha1").update(m).digest("base64");
+    const hash = getHash(m);
     const count = (this.messageRoster[hash] || 0) + 1;
     this.messageRoster[hash] = count;
   };
 
   toString() {
-    return JSON.stringify(this.messageRoster, null, 2);
+    return pretty(this.hashCounts);
   }
 }
 
 const getAuthedWebsocket = (
   url: string,
   authToken: string,
-  messageCallback = (m: any) => {},
+  messageCallback = (m: string) => {},
   payloadsOnAck: any[] = []
 ) => {
+  console.log(chalk.bgGreen("getAuthedWebsocket"));
   const ws = new WebSocket(url, ["graphql-ws"]);
 
   ws.on("open", function open() {
@@ -57,9 +61,9 @@ const getAuthedWebsocket = (
         //@ts-ignore
         const { type } = JSON.parse(json);
         if (type === "connection_ack") {
-          // console.log(
-          //   chalk.cyanBright("Connection Acknowledged, send payloads")
-          // );
+          console.log(
+            chalk.cyanBright("Connection Acknowledged, send payloads")
+          );
           for (const payload of payloadsOnAck) {
             ws.send(JSON.stringify(payload));
           }

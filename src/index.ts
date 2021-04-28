@@ -31,7 +31,12 @@ const { token, endpoint } = program.opts();
 if (!endpoint) program.help();
 
 try {
-  const herd = new ClientHerd(endpoint, token, console.log, 3);
+  const herd = new ClientHerd(
+    endpoint,
+    token,
+    (herd) => console.log(chalk.magenta(herd)),
+    3
+  );
 } catch (e) {
   console.log(e);
 }
