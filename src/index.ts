@@ -21,7 +21,7 @@ program
     "Endpoint",
     "ws://localhost:3000/graphql"
   )
-  .option("-n <num>", "Number of websocket connections", parseInt, 10)
+  .option("-n --num <num>", "Number of websocket connections", parseInt, 10)
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token", "bla")
