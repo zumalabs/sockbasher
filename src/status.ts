@@ -7,7 +7,7 @@ export function statusReport(herd: ClientHerd) {
   const status = herd.consistent
     ? chalk.bgGreen("Consistent")
     : chalk.bgRed("Inconsistent");
-  const numSocks = chalk.blue(herd.numSocks);
+  const numSocks = chalk.cyanBright(herd.numSocks);
 
   if (!debugMode) banner();
   console.log(
