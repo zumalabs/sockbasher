@@ -16,8 +16,9 @@ console.log(
 async function authHandler (env: any, options: any) {
     const { user, password, token, host, num } = program.opts();
     if (!host) program.help();
-    const auth_endpoint = `https://${host}/api/graphql`
-    const ws_endpoint = `ws://${host}/graphql`
+    const secure = !host.includes("localhost")
+    const auth_endpoint = `${secure ? "https" : "http"}://${host}/api/graphql`
+    const ws_endpoint = `${secure ? "wss" : "ws"}://${host}/graphql`
 
     try {
         const authToken = await fetchAuthTokens(user, password, auth_endpoint, token)
