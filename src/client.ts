@@ -6,7 +6,7 @@ import pretty from "./pretty";
 
 class Client {
   private ws: WebSocket;
-  private changeCallback: ((client: Client) => void) | null;
+  private changeCallback: () => void;
   private messageRoster: { [name: string]: number };
 
   constructor(
@@ -15,7 +15,8 @@ class Client {
     changeCallback?: (client: Client) => void
   ) {
     this.messageRoster = {};
-    this.changeCallback = changeCallback || null;
+    this.changeCallback = () => {};
+    if (changeCallback) this.changeCallback = () => changeCallback(this);
     this.ws = getAuthedWebsocket(url, authToken, this.onMessage, subscriptions);
   }
 
@@ -24,7 +25,7 @@ class Client {
     try {
       const { type, ...data } = JSON.parse(m);
       this.logMessage(m);
-      if (type === "data" && this.changeCallback) this.changeCallback(this);
+      if (type === "data") this.changeCallback();
     } catch (e) {
       console.log(chalk.redBright(e));
     }
