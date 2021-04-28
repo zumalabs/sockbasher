@@ -15,7 +15,7 @@ program
     url: "the sock to bash",
   })
   .option("-e, --host <host>", "Host", "localhost:3000")
-  .option("-n, --num <num>", "Number of websocket connections", parseInt, 3)
+  .option("-n, --num <num>", "Number of websocket connections", "3")
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token")
@@ -37,7 +37,7 @@ const main = (async () => {
       authEndpoint,
       token
     );
-    const herd = new ClientHerd(wsEndpoint, authToken, statusReport, num);
+    const herd = new ClientHerd(wsEndpoint, authToken, statusReport, parseInt(num));
     process.on("SIGINT", () => process.exit(herd.consistent ? 0 : 1));
     await herd.ready;
   } catch (e) {
