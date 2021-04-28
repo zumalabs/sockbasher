@@ -5,7 +5,7 @@ import clear from "clear";
 import figlet from "figlet";
 import { program } from "commander";
 
-import Client from "./client";
+import ClientHerd from "./clientHerd";
 
 clear();
 console.log(
@@ -31,7 +31,7 @@ const { token, endpoint } = program.opts();
 if (!endpoint) program.help();
 
 try {
-  const client = new Client(endpoint, token);
+  const herd = new ClientHerd(endpoint, token, console.log, 3);
 } catch (e) {
   console.log(e);
 }

@@ -4,12 +4,24 @@ import subscriptions from "./subscriptions";
 
 class Client {
   private ws: WebSocket;
+  private changeCallback: ((client: Client) => void) | null;
 
-  constructor(url: string, authToken: string) {
+  constructor(
+    url: string,
+    authToken: string,
+    changeCallback?: (client: Client) => void
+  ) {
+    this.changeCallback = changeCallback || null;
     this.ws = getAuthedWebsocket(url, authToken, this.onMessage, subscriptions);
   }
 
-  onMessage = (m: any) => console.log(chalk.yellow(m));
+  onMessage = (m: any) => {
+    console.log(chalk.yellow(m));
+    try {
+      const { type, ...data } = JSON.parse(m);
+      if (type === "data" && this.changeCallback) this.changeCallback(this);
+    } catch {}
+  };
 }
 
 const getAuthedWebsocket = (
