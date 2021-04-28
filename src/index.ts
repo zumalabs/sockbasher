@@ -21,13 +21,13 @@ program
     "Endpoint",
     "ws://localhost:3000/graphql"
   )
-  .option("-n <number>", "Number of websocket connections", parseInt, 10)
+  .option("-n <num>", "Number of websocket connections", parseInt, 10)
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token", "bla")
   .parse(process.argv);
 
-const { token, endpoint } = program.opts();
+const { token, endpoint, num } = program.opts();
 if (!endpoint) program.help();
 
 try {
@@ -35,7 +35,7 @@ try {
     endpoint,
     token,
     (herd) => console.log(chalk.magenta(herd)),
-    3
+    num
   );
 } catch (e) {
   console.log(e);
