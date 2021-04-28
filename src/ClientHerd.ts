@@ -20,7 +20,7 @@ class ClientHerd {
     this.clients = Array.from(Array(n).keys()).map(
       () => new Client(url, authToken, this.clientCallback)
     );
-    console.log(this.clients);
+    // console.log(this.clients);
   }
 
   clientCallback = (client: Client) => {
