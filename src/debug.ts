@@ -1,4 +1,4 @@
-let debugMode = false;
+export let debugMode = false;
 
 export function setDebug(mode: boolean = true) {
   debugMode = mode;
