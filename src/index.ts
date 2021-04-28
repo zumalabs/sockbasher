@@ -21,7 +21,7 @@ async function authHandler (env: any, options: any) {
 
     try {
         const auth = await fetchAuthTokens(user, password, auth_endpoint)
-        const herd = new ClientHerd(endpoint, token, console.log, 3);
+        const herd = new ClientHerd(ws_endpoint, token || auth.tokenAuth.token, console.log, 3);
     } catch (e) {
         console.log(e);
     }
@@ -40,4 +40,5 @@ program
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token", "-")
+  .action(authHandler)
   .parse(process.argv);
