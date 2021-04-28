@@ -21,8 +21,7 @@ export const getAuthedWebsocket = (
             chalk.cyanBright("Connection Acknowledged, send subscriptions")
           );
           for (const sub of subscriptions) {
-            console.log(sub);
-            ws.send(sub);
+            ws.send(JSON.stringify(sub));
           }
         }
       } catch {}
