@@ -5,6 +5,7 @@ import clear from "clear";
 import figlet from "figlet";
 import { program } from "commander";
 import { setDebug } from "./debug";
+import { statusReport } from "./status";
 
 import { fetchAuthTokens } from "./auth";
 import ClientHerd from "./clientHerd";
@@ -29,12 +30,7 @@ async function authHandler(env: any, options: any) {
       authEndpoint,
       token
     );
-    const herd = new ClientHerd(
-      wsEndpoint,
-      authToken,
-      (herd) => console.log(chalk.magenta(herd)),
-      num
-    );
+    const herd = new ClientHerd(wsEndpoint, authToken, statusReport, num);
   } catch (e) {
     console.log(e);
   }

@@ -42,6 +42,10 @@ class ClientHerd {
   toString() {
     return pretty(this.uniqueMessageStreams);
   }
+
+  get consistent() {
+    return Object.keys(this.uniqueMessageStreams).length === 1;
+  }
 }
 
 export default ClientHerd;
