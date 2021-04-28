@@ -1,5 +1,4 @@
 import Client from "./client";
-import chalk from "chalk";
 import getHash from "./hash";
 import pretty from "./pretty";
 
@@ -7,6 +6,7 @@ class ClientHerd {
   private clients: Client[];
   private changeCallback: () => void;
   private uniqueMessageStreams: { [hash: string]: { [hash: string]: number } };
+  private clientsPromise: Promise<ClientHerd>;
 
   constructor(
     url: string,
@@ -18,7 +18,7 @@ class ClientHerd {
     this.changeCallback = () => {};
     if (changeCallback) this.changeCallback = () => changeCallback(this);
     this.clients = [];
-    this.addClients(n, url, authToken);
+    this.clientsPromise = this.addClients(n, url, authToken);
   }
 
   addClients = async (n: number, url: string, authToken: string) => {
@@ -26,6 +26,7 @@ class ClientHerd {
       const client = new Client(url, authToken, this.clientCallback);
       await client.ready;
       this.clients.push(client);
+      this.changeCallback();
     }
     return this;
   };
@@ -49,6 +50,10 @@ class ClientHerd {
 
   get consistent() {
     return Object.keys(this.uniqueMessageStreams).length < 2;
+  }
+
+  get ready() {
+    return this.clientsPromise.then(() => true);
   }
 }
 
