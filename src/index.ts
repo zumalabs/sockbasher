@@ -31,6 +31,7 @@ async function authHandler(env: any, options: any) {
       token
     );
     const herd = new ClientHerd(wsEndpoint, authToken, statusReport, num);
+    process.on("SIGINT", () => process.exit(herd.consistent ? 0 : 1));
   } catch (e) {
     console.log(e);
   }

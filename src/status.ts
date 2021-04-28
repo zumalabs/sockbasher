@@ -8,12 +8,16 @@ enum Status {
 }
 
 export function statusReport(herd: ClientHerd) {
-  const status = herd.consistent ? Status.Consistent : Status.Inconsistent;
+  const status = herd.consistent
+    ? chalk.bgGreen("Consistent")
+    : chalk.bgRed("Inconsistent");
+  const numSocks = chalk.blue(herd.numSocks);
 
-  if (status === Status.Consistent) {
-    console.log(chalk.white("Status: "), chalk.bgGreen("Consistent"));
-  } else {
-    console.log(chalk.magenta(herd));
-    console.log(chalk.white("Status: "), chalk.bgRed("Inconsistent"));
-  }
+  if (!herd.consistent) console.log(chalk.magenta(herd));
+  console.log(
+    chalk.white("Num socks: "),
+    numSocks,
+    chalk.white("Status: "),
+    status
+  );
 }

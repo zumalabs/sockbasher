@@ -43,8 +43,12 @@ class ClientHerd {
     return pretty(this.uniqueMessageStreams);
   }
 
+  get numSocks() {
+    return this.clients.length;
+  }
+
   get consistent() {
-    return Object.keys(this.uniqueMessageStreams).length === 1;
+    return Object.keys(this.uniqueMessageStreams).length < 2;
   }
 }
 
