@@ -14,14 +14,19 @@ console.log(
 );
 
 async function authHandler (env: any, options: any) {
-    const { user, password, token, host, connections } = program.opts();
+    const { user, password, token, host, num } = program.opts();
     if (!host) program.help();
     const auth_endpoint = `https://${host}/api/graphql`
     const ws_endpoint = `ws://${host}/graphql`
 
     try {
         const authToken = await fetchAuthTokens(user, password, auth_endpoint, token)
-        const herd = new ClientHerd(ws_endpoint, authToken, console.log, connections);
+        const herd = new ClientHerd(
+            ws_endpoint,
+            authToken,
+            (herd) => console.log(chalk.magenta(herd)),
+            num
+        );
     } catch (e) {
         console.log(e);
     }
@@ -36,7 +41,7 @@ program
     "Host",
     "localhost:3000"
   )
-  .option("-n, --connections <connections>", "Number of websocket connections", parseInt, 3)
+  .option("-n, --num <num>", "Number of websocket connections", parseInt, 10)
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token")
