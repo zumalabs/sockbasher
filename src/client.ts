@@ -3,6 +3,7 @@ import chalk from "chalk";
 import getHash from "./hash";
 import subscriptions from "./subscriptions";
 import pretty from "./pretty";
+import debug from "./debug";
 
 class Client {
   private ws: Promise<WebSocket>;
@@ -21,7 +22,7 @@ class Client {
   }
 
   onMessage = (m: string) => {
-    console.log(chalk.yellow(m), chalk.yellowBright(getHash(m)));
+    debug(chalk.yellow(m), chalk.yellowBright(getHash(m)));
     try {
       const { type, ...data } = JSON.parse(m);
       if (type === "data") {
