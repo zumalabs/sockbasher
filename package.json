@@ -37,7 +37,8 @@
     "graphql-tag": "^2.11.0",
     "object-hash": "^2.1.1",
     "path": "^0.12.7",
-    "ws": "^7.4.5"
+    "ws": "^7.4.5",
+    "graphql-request": "^3.4.0"
   },
   "devDependencies": {
     "@types/clear": "^0.1.1",
