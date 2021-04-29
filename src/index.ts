@@ -19,10 +19,11 @@ program
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token")
+  .option("-w, --wait <wait>", "Amount of time to wait for each websocket to consume the message (seconds)", "0")
   .option("-d, --debug", "Debug mode")
   .parse(process.argv);
 
-const { user, password, token, host, num, debug } = program.opts();
+const { user, password, token, host, num, wait, debug } = program.opts();
 if (!host) program.help();
 if (debug) setDebug();
 const secure = !host.includes("localhost");
@@ -37,7 +38,7 @@ const main = (async () => {
       authEndpoint,
       token
     );
-    const herd = new ClientHerd(wsEndpoint, authToken, statusReport, parseInt(num));
+    const herd = new ClientHerd(wsEndpoint, authToken, statusReport, parseInt(num), parseInt(wait));
     process.on("SIGINT", () => process.exit(herd.consistent ? 0 : 1));
     await herd.ready;
   } catch (e) {

@@ -2,23 +2,28 @@ import Client from "./client";
 import getHash from "./hash";
 import pretty from "./pretty";
 
+const MAX_SET_TIMER_VALUE = 2147483647
+
 class ClientHerd {
   private clients: Client[];
   private changeCallback: () => void;
   private uniqueMessageStreams: { [hash: string]: { [hash: string]: number } };
   private clientsPromise: Promise<ClientHerd>;
+  private waitForErrorStatus: number;
 
   constructor(
     url: string,
     authToken: string,
     changeCallback?: (herd: ClientHerd) => void,
-    n: number = 0
+    n: number = 0,
+    waitForErrorStatus: number = 0,
   ) {
     this.uniqueMessageStreams = {};
     this.changeCallback = () => {};
     if (changeCallback) this.changeCallback = () => changeCallback(this);
     this.clients = [];
     this.clientsPromise = this.addClients(n, url, authToken);
+    this.waitForErrorStatus = waitForErrorStatus;
   }
 
   addClients = async (n: number, url: string, authToken: string) => {
@@ -55,6 +60,10 @@ class ClientHerd {
 
   get ready() {
     return this.clientsPromise.then(() => true);
+  }
+
+  get waitForErrorMillis() {
+    return this.waitForErrorStatus === 0 ? MAX_SET_TIMER_VALUE : (this.waitForErrorStatus * 1000)
   }
 }
 
