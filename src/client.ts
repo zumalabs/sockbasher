@@ -21,6 +21,10 @@ class Client {
     this.ws = getAuthedWebsocket(url, authToken, this.onMessage, subscriptions);
   }
 
+  async close() {
+    (await this.ws).close();
+  }
+
   onMessage = (m: string) => {
     debug(chalk.yellow(m), chalk.yellowBright(getHash(m)));
     try {
