@@ -50,9 +50,6 @@ const secure = !host.includes("localhost");
 const authEndpoint = `${secure ? "https" : "http"}://${host}/api/graphql`;
 const wsEndpoint = `${secure ? "wss" : "ws"}://${host}/graphql`;
 
-// console.log(numUnstable, parseInt(numUnstable));
-// console.log(freqUnstable, parseFloat(freqUnstable));
-
 const main = (async () => {
   try {
     const authToken = await fetchAuthTokens(
