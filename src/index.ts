@@ -16,14 +16,14 @@ program
     url: "the sock to bash",
   })
   .option("-e, --host <host>", "Host", "localhost:3000")
-  .option("-n, --num <num>", "Number of websocket connections", "3")
+  .option("-n, --num <num>", "Number of websocket connections", "10")
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token")
   .option(
     "-m, --num-unstable <numUnstable>",
     "Number of unstable clients to add",
-    "1"
+    "10"
   )
   .option(
     "-f, --freq-unstable <freqUnstable>",

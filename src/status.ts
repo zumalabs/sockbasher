@@ -33,7 +33,7 @@ class StatusReporter {
     if (this.nHerdSocks)
       output.push(chalk.white("Num socks: "), this.nHerdSocks);
     if (this.status) output.push(chalk.white("Status: "), this.status);
-    if (this.nFlockSocks)
+    if (this.nFlockSocks !== undefined)
       output.push(chalk.white("Chaos Sockets: ", this.nFlockSocks));
     console.log(...output);
     if (this.consistent === false) console.log(this.diff);
