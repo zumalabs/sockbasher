@@ -1,23 +1,27 @@
 import ClientHerd from "./ClientHerd";
-import debug from "./debug";
 
-class ChaosPromise {
-  private promise: Promise<void>;
+class ChaosPromise<T> {
+  private promise: Promise<T>;
   resolved = false;
 
-  constructor(p: Promise<void>) {
+  constructor(p: Promise<T>) {
     this.promise = p;
     this.promise.then(() => {
       this.resolved = true;
     });
+  }
+
+  then(cb: (a: T) => any) {
+    return this.promise.then(cb);
   }
 }
 
 class ClientFlock {
   private herd: ClientHerd;
   private changeCallback: () => void = () => {};
-  private promises: ChaosPromise[] = [];
+  private promises: ChaosPromise<void>[] = [];
   readonly isClientFlock = true;
+  private n: number; // avg number in flock
   private f: number; // change frequency per connection
 
   constructor(
@@ -27,26 +31,23 @@ class ClientFlock {
     n: number = 0,
     f: number = 1 // avg flock drop/reconn frequency per second
   ) {
-    this.herd = new ClientHerd(url, authToken, this.clientCallback, n);
+    this.herd = new ClientHerd(url, authToken, this.herdCallback, n);
     if (changeCallback) this.changeCallback = () => changeCallback(this);
+    this.n = n;
     this.f = f / n; // convert per-flock f to per connection
-    this.promises.push(new ChaosPromise(this.init(n)));
-  }
-
-  async init(n: number) {
-    await this.herd.addClients(n);
     this.maintainChaos();
   }
 
-  clientCallback = () => {
+  herdCallback = () => {
     this.changeCallback();
     this.maintainChaos();
   };
 
   maintainChaos = () => {
     this.promises = this.promises.filter((p) => !p.resolved);
-    for (let i = 0; i <= this.herd.numSocks - this.promises.length; i++) {
-      if (Math.round(Math.random())) this.scheduleConnect();
+    for (let i = 0; i < this.n - this.promises.length; i++) {
+      const coinflip = Math.round(Math.random());
+      if (coinflip) this.scheduleConnect();
       else this.scheduleDisconnect();
     }
   };

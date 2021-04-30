@@ -43,6 +43,7 @@ const {
   freqUnstable,
   debug,
 } = program.opts();
+
 if (!host) program.help();
 if (debug) setDebug();
 const secure = !host.includes("localhost");
