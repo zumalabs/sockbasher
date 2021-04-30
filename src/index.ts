@@ -26,12 +26,14 @@ program
     "1"
   )
   .option(
-    "-f, --unstable-frequency <freqUnstable>",
-    "Unstable client state change frequency (/minute)",
-    "12"
+    "-f, --freq-unstable <freqUnstable>",
+    "Unstable client state change frequency (/second)",
+    "1"
   )
   .option("-d, --debug", "Debug mode")
   .parse(process.argv);
+
+console.log(process.argv);
 
 const {
   user,
@@ -48,6 +50,9 @@ if (debug) setDebug();
 const secure = !host.includes("localhost");
 const authEndpoint = `${secure ? "https" : "http"}://${host}/api/graphql`;
 const wsEndpoint = `${secure ? "wss" : "ws"}://${host}/graphql`;
+
+console.log(numUnstable, parseInt(numUnstable));
+console.log(freqUnstable, parseFloat(freqUnstable));
 
 const main = (async () => {
   try {
@@ -66,9 +71,9 @@ const main = (async () => {
     const flock = new ClientFlock(
       wsEndpoint,
       authToken,
-      () => {},
+      statusReport,
       parseInt(numUnstable),
-      parseInt(freqUnstable)
+      parseFloat(freqUnstable)
     );
     process.on("SIGINT", () => process.exit(herd.consistent ? 0 : 1));
     await herd.ready;

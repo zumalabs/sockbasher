@@ -21,7 +21,10 @@ class StatusReporter {
 
     this.print();
   };
+
   reportFlock = (flock: ClientFlock) => {
+    console.log("REPORT FLOCK");
+    this.nFlockSocks = flock.numSocks;
     this.print();
   };
 
@@ -31,6 +34,8 @@ class StatusReporter {
     if (this.nHerdSocks)
       output.push(chalk.white("Num socks: "), this.nHerdSocks);
     if (this.status) output.push(chalk.white("Status: "), this.status);
+    if (this.nFlockSocks)
+      output.push(chalk.white("Chaos Sockets: ", this.nFlockSocks));
     console.log(...output);
     if (this.consistent === false) console.log(this.diff);
   };

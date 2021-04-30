@@ -3,13 +3,15 @@ import getHash from "./hash";
 import pretty from "./pretty";
 
 class ClientHerd {
+  private url: string;
+  private authToken: string;
   private clients: Client[] = [];
   private changeCallback: () => void = () => {};
   private uniqueMessageStreams: {
     [hash: string]: { [hash: string]: number };
   } = {};
   private clientsPromise: Promise<ClientHerd>;
-  private isClientHerd = true;
+  readonly isClientHerd = true;
 
   constructor(
     url: string,
@@ -18,13 +20,18 @@ class ClientHerd {
     n: number = 0
   ) {
     if (changeCallback) this.changeCallback = () => changeCallback(this);
-    this.clientsPromise = this.addClients(n, url, authToken);
+    this.url = url;
+    this.authToken = authToken;
+    this.clientsPromise = this.addClients(n);
   }
 
-  addClients = async (n: number, url: string, authToken: string) => {
+  addClients = async (n: number) => {
     const newClients = Array.from(Array(n).keys()).map(async () => {
-      const client = await new Client(url, authToken, this.clientCallback)
-        .ready;
+      const client = await new Client(
+        this.url,
+        this.authToken,
+        this.clientCallback
+      ).ready;
       this.clients.push(client);
       this.changeCallback();
     });
