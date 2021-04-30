@@ -7,6 +7,7 @@ import { statusReport } from "./status";
 
 import { fetchAuthTokens } from "./auth";
 import ClientHerd from "./clientHerd";
+import ClientFlock from "./ClientFlock";
 
 banner();
 
@@ -19,10 +20,29 @@ program
   .option("-u, --user <user>", "User", "bill")
   .option("-p, --password <password>", "Password", "bill")
   .option("-t, --token <token>", "Auth token")
+  .option(
+    "-m, --num-unstable <numUnstable>",
+    "Number of unstable clients to add",
+    "1"
+  )
+  .option(
+    "-f, --unstable-frequency <freqUnstable>",
+    "Unstable client state change frequency (/minute)",
+    "12"
+  )
   .option("-d, --debug", "Debug mode")
   .parse(process.argv);
 
-const { user, password, token, host, num, debug } = program.opts();
+const {
+  user,
+  password,
+  token,
+  host,
+  num,
+  numUnstable,
+  freqUnstable,
+  debug,
+} = program.opts();
 if (!host) program.help();
 if (debug) setDebug();
 const secure = !host.includes("localhost");
@@ -37,7 +57,19 @@ const main = (async () => {
       authEndpoint,
       token
     );
-    const herd = new ClientHerd(wsEndpoint, authToken, statusReport, parseInt(num));
+    const herd = new ClientHerd(
+      wsEndpoint,
+      authToken,
+      statusReport,
+      parseInt(num)
+    );
+    const flock = new ClientFlock(
+      wsEndpoint,
+      authToken,
+      () => {},
+      parseInt(numUnstable),
+      parseInt(freqUnstable)
+    );
     process.on("SIGINT", () => process.exit(herd.consistent ? 0 : 1));
     await herd.ready;
   } catch (e) {

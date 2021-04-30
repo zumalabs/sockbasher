@@ -3,10 +3,13 @@ import getHash from "./hash";
 import pretty from "./pretty";
 
 class ClientHerd {
-  private clients: Client[];
-  private changeCallback: () => void;
-  private uniqueMessageStreams: { [hash: string]: { [hash: string]: number } };
+  private clients: Client[] = [];
+  private changeCallback: () => void = () => {};
+  private uniqueMessageStreams: {
+    [hash: string]: { [hash: string]: number };
+  } = {};
   private clientsPromise: Promise<ClientHerd>;
+  private isClientHerd = true;
 
   constructor(
     url: string,
@@ -14,10 +17,7 @@ class ClientHerd {
     changeCallback?: (herd: ClientHerd) => void,
     n: number = 0
   ) {
-    this.uniqueMessageStreams = {};
-    this.changeCallback = () => {};
     if (changeCallback) this.changeCallback = () => changeCallback(this);
-    this.clients = [];
     this.clientsPromise = this.addClients(n, url, authToken);
   }
 
@@ -30,6 +30,13 @@ class ClientHerd {
     });
     await Promise.all(newClients);
     return this;
+  };
+
+  dropClient = () => {
+    if (this.clients.length < 1) return;
+    const removeIndex = Math.floor(Math.random() * this.clients.length);
+    this.clients.splice(removeIndex, 1);
+    this.changeCallback();
   };
 
   clientCallback = (client: Client) => {
@@ -57,5 +64,11 @@ class ClientHerd {
     return this.clientsPromise.then(() => true);
   }
 }
+
+Object.defineProperty(ClientHerd, Symbol.hasInstance, {
+  value: function (obj: any) {
+    return obj.isClientHerd;
+  },
+});
 
 export default ClientHerd;
