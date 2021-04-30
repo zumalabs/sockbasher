@@ -39,9 +39,10 @@ class ClientHerd {
     return this;
   };
 
-  dropClient = () => {
+  dropClient = async () => {
     if (this.clients.length < 1) return;
     const removeIndex = Math.floor(Math.random() * this.clients.length);
+    await this.clients[removeIndex].close();
     this.clients.splice(removeIndex, 1);
     this.changeCallback();
   };

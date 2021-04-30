@@ -78,7 +78,7 @@ class ClientFlock {
       new ChaosPromise(
         (async () => {
           await this.wait();
-          this.herd.dropClient();
+          await this.herd.dropClient();
           this.changeCallback();
         })()
       )
