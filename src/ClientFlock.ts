@@ -1,9 +1,22 @@
 import ClientHerd from "./ClientHerd";
+import debug from "./debug";
+
+class ChaosPromise {
+  private promise: Promise<void>;
+  resolved = false;
+
+  constructor(p: Promise<void>) {
+    this.promise = p;
+    this.promise.then(() => {
+      this.resolved = true;
+    });
+  }
+}
 
 class ClientFlock {
   private herd: ClientHerd;
   private changeCallback: () => void = () => {};
-  private promises: Set<Promise<void>> = new Set();
+  private promises: ChaosPromise[] = [];
   readonly isClientFlock = true;
   private f: number; // change frequency per connection
 
@@ -17,13 +30,7 @@ class ClientFlock {
     this.herd = new ClientHerd(url, authToken, this.clientCallback, n);
     if (changeCallback) this.changeCallback = () => changeCallback(this);
     this.f = f / n; // convert per-flock f to per connection
-    console.log(f, n, this.f);
-    const initPromise = this.init(n);
-    this.promises.add(
-      initPromise.then(() => {
-        this.promises.delete(initPromise);
-      })
-    );
+    this.promises.push(new ChaosPromise(this.init(n)));
   }
 
   async init(n: number) {
@@ -37,7 +44,8 @@ class ClientFlock {
   };
 
   maintainChaos = () => {
-    for (let i = 0; i++; i < this.herd.numSocks - this.promises.size) {
+    this.promises = this.promises.filter((p) => !p.resolved);
+    for (let i = 0; i <= this.herd.numSocks - this.promises.length; i++) {
       if (Math.round(Math.random())) this.scheduleConnect();
       else this.scheduleDisconnect();
     }
@@ -46,7 +54,6 @@ class ClientFlock {
   getEtaMillis = () => {
     // model as posson process rate f, so arrival time
     // exponentially distributed
-
     return (-1000 * Math.log(Math.random())) / this.f;
   };
 
@@ -55,28 +62,26 @@ class ClientFlock {
 
   // TODO some DRY
   scheduleConnect = () => {
-    const p = (async () => {
-      await this.wait();
-      await this.herd.addClients(1);
-      this.changeCallback();
-    })();
-    this.promises.add(
-      p.then(() => {
-        this.promises.delete(p);
-      })
+    this.promises.push(
+      new ChaosPromise(
+        (async () => {
+          await this.wait();
+          await this.herd.addClients(1);
+          this.changeCallback();
+        })()
+      )
     );
   };
 
   scheduleDisconnect = () => {
-    const p = (async () => {
-      await this.wait();
-      this.herd.dropClient();
-      this.changeCallback();
-    })();
-    this.promises.add(
-      p.then(() => {
-        this.promises.delete(p);
-      })
+    this.promises.push(
+      new ChaosPromise(
+        (async () => {
+          await this.wait();
+          this.herd.dropClient();
+          this.changeCallback();
+        })()
+      )
     );
   };
 

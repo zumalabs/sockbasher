@@ -23,7 +23,6 @@ class StatusReporter {
   };
 
   reportFlock = (flock: ClientFlock) => {
-    console.log("REPORT FLOCK");
     this.nFlockSocks = flock.numSocks;
     this.print();
   };
