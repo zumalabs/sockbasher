@@ -2,10 +2,8 @@ import ClientHerd from "./ClientHerd";
 import chalk from "chalk";
 import banner from "./banner";
 import { debugMode } from "./debug";
-import clear from "clear";
 
 let errorTimer: any
-let shownBanner: boolean = false
 
 export function statusReport(herd: ClientHerd) {
   const status = herd.consistent
@@ -14,25 +12,22 @@ export function statusReport(herd: ClientHerd) {
   const numSocks = chalk.cyanBright(herd.numSocks);
 
   if (!debugMode) banner();
-  // if (!debugMode) {
-  //   if (!shownBanner) {
-  //     banner()
-  //     shownBanner = true
-  //   } else {
-  //     clear();
-  //   }
-  // }
 
   if (!herd.consistent) {
+    clearTimer()
     errorTimer = setTimeout(function() {
       logStatus(numSocks, status)
       console.log(chalk.magenta(herd));
     }, herd.waitForErrorMillis);
   } else {
+    clearTimer()
     logStatus(numSocks, status)
-    if (errorTimer) {
-      clearTimeout(errorTimer)
-    }
+  }
+}
+
+function clearTimer() {
+  if (errorTimer) {
+    clearTimeout(errorTimer)
   }
 }
 
