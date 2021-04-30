@@ -6,7 +6,7 @@ import { setDebug } from "./debug";
 import { statusReport } from "./status";
 
 import { fetchAuthTokens } from "./auth";
-import ClientHerd from "./clientHerd";
+import ClientHerd from "./ClientHerd";
 import ClientFlock from "./ClientFlock";
 
 banner();
