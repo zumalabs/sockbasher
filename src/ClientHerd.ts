@@ -2,6 +2,8 @@ import Client from "./client";
 import getHash from "./hash";
 import pretty from "./pretty";
 
+const MAX_SET_TIMER_VALUE = 2147483647
+
 class ClientHerd {
   private url: string;
   private authToken: string;
@@ -11,18 +13,21 @@ class ClientHerd {
     [hash: string]: { [hash: string]: number };
   } = {};
   private clientsPromise: Promise<ClientHerd>;
+  private waitForErrorStatus: number;
   readonly isClientHerd = true;
 
   constructor(
     url: string,
     authToken: string,
     changeCallback?: (herd: ClientHerd) => void,
-    n: number = 0
+    n: number = 0,
+    waitForErrorStatus: number = 0,
   ) {
     if (changeCallback) this.changeCallback = () => changeCallback(this);
     this.url = url;
     this.authToken = authToken;
     this.clientsPromise = this.addClients(n);
+    this.waitForErrorStatus = waitForErrorStatus;
   }
 
   addClients = async (n: number) => {
@@ -69,6 +74,10 @@ class ClientHerd {
 
   get ready() {
     return this.clientsPromise.then(() => true);
+  }
+
+  get waitForErrorMillis() {
+    return this.waitForErrorStatus === 0 ? MAX_SET_TIMER_VALUE : (this.waitForErrorStatus * 1000)
   }
 }
 

@@ -10,6 +10,8 @@ class StatusReporter {
   private status?: string;
   private nHerdSocks?: string;
   private nFlockSocks?: number;
+  private errorTimer: any
+  private waitForErrorMillis?: number;
 
   reportHerd = (herd: ClientHerd) => {
     this.consistent = herd.consistent;
@@ -18,7 +20,7 @@ class StatusReporter {
       : chalk.bgRed("Inconsistent");
     this.nHerdSocks = chalk.cyanBright(herd.numSocks);
     this.diff = chalk.magenta(herd);
-
+    this.waitForErrorMillis = herd.waitForErrorMillis;
     this.print();
   };
 
@@ -35,9 +37,25 @@ class StatusReporter {
     if (this.status) output.push(chalk.white("Status: "), this.status);
     if (this.nFlockSocks !== undefined)
       output.push(chalk.white("Chaos Sockets: ", this.nFlockSocks));
-    console.log(...output);
-    if (this.consistent === false) console.log(this.diff);
+
+    if (this.consistent === false) {
+      this.clearTimer()
+      const diff = this.diff
+      this.errorTimer = setTimeout(function() {
+        console.log(...output);
+        console.log(diff)
+      }, this.waitForErrorMillis);
+    } else {
+      this.clearTimer()
+      console.log(...output);
+    }
   };
+
+  clearTimer = () => {
+    if (this.errorTimer) {
+      clearTimeout(this.errorTimer)
+    }
+  }
 }
 
 const statusReporter = new StatusReporter();

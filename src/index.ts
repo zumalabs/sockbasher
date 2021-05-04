@@ -30,6 +30,7 @@ program
     "Unstable client state change frequency (/second)",
     "1"
   )
+  .option("-w, --wait <wait>", "Amount of time to wait for each websocket to consume the message (seconds)", "0")
   .option("-d, --debug", "Debug mode")
   .parse(process.argv);
 
@@ -41,6 +42,7 @@ const {
   num,
   numUnstable,
   freqUnstable,
+  wait,
   debug,
 } = program.opts();
 
@@ -62,7 +64,8 @@ const main = (async () => {
       wsEndpoint,
       authToken,
       statusReport,
-      parseInt(num)
+      parseInt(num),
+      parseInt(wait),
     );
     const flock = new ClientFlock(
       wsEndpoint,
