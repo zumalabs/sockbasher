@@ -5,11 +5,16 @@ import pretty from "./pretty";
 const MAX_SET_TIMER_VALUE = 2147483647
 
 class ClientHerd {
-  private clients: Client[];
-  private changeCallback: () => void;
-  private uniqueMessageStreams: { [hash: string]: { [hash: string]: number } };
+  private url: string;
+  private authToken: string;
+  private clients: Client[] = [];
+  private changeCallback: () => void = () => {};
+  private uniqueMessageStreams: {
+    [hash: string]: { [hash: string]: number };
+  } = {};
   private clientsPromise: Promise<ClientHerd>;
   private waitForErrorStatus: number;
+  readonly isClientHerd = true;
 
   constructor(
     url: string,
@@ -18,18 +23,20 @@ class ClientHerd {
     n: number = 0,
     waitForErrorStatus: number = 0,
   ) {
-    this.uniqueMessageStreams = {};
-    this.changeCallback = () => {};
     if (changeCallback) this.changeCallback = () => changeCallback(this);
-    this.clients = [];
-    this.clientsPromise = this.addClients(n, url, authToken);
+    this.url = url;
+    this.authToken = authToken;
+    this.clientsPromise = this.addClients(n);
     this.waitForErrorStatus = waitForErrorStatus;
   }
 
-  addClients = async (n: number, url: string, authToken: string) => {
+  addClients = async (n: number) => {
     const newClients = Array.from(Array(n).keys()).map(async () => {
-      const client = await new Client(url, authToken, this.clientCallback)
-        .ready;
+      const client = await new Client(
+        this.url,
+        this.authToken,
+        this.clientCallback
+      ).ready;
       this.clients.push(client);
       this.changeCallback();
     });
@@ -37,8 +44,15 @@ class ClientHerd {
     return this;
   };
 
+  dropClient = async () => {
+    if (this.clients.length < 1) return;
+    const removeIndex = Math.floor(Math.random() * this.clients.length);
+    await this.clients[removeIndex].close();
+    this.clients.splice(removeIndex, 1);
+    this.changeCallback();
+  };
+
   clientCallback = (client: Client) => {
-    // console.log(chalk.grey(client));
     this.uniqueMessageStreams = this.clients.reduce((acc, c) => {
       const hashCounts = c.hashCounts;
       return { ...acc, [getHash(hashCounts)]: hashCounts };
@@ -66,5 +80,11 @@ class ClientHerd {
     return this.waitForErrorStatus === 0 ? MAX_SET_TIMER_VALUE : (this.waitForErrorStatus * 1000)
   }
 }
+
+Object.defineProperty(ClientHerd, Symbol.hasInstance, {
+  value: function (obj: any) {
+    return obj.isClientHerd;
+  },
+});
 
 export default ClientHerd;
